@@ -66,7 +66,7 @@ impl  BudgetManager {
             "INSERT INTO budgets (budget_name,total_amount,remaining_amount) VALUES (?1,?2,?3)",
              params! [budget_name,total_amount,remaining_amount],
         )?;
-        println!("Ajout en cours...");
+        println!("Ajout en cours.....\n");
         println!("{}", success_style.apply_to(format!(
             "Budget '{}' ajouté avec succès ! Montant total : {:.2}, Montant restant : {:.2}.",
             budget_name, total_amount, remaining_amount )));
@@ -86,7 +86,7 @@ impl  BudgetManager {
         if rows_affected > 0 {
             println!("{}", success_style.apply_to(format!("Budget'{}' supprimée avec succès .", budget_name)));
         } else {
-            println!("{}", error_style.apply_to(format!("Le budget : '{}' n'existe pas.", budget_name)));
+            println!("{}", error_style.apply_to(format!("Erreur: Le budget : '{}' n'existe pas", budget_name)));
         }
 
         Ok(())
@@ -104,7 +104,7 @@ impl  BudgetManager {
         if rows_affected > 0 {
             println!("{}", success_style.apply_to("Budget modifiée avec succès !"));
         } else {
-            println!("{}", error_style.apply_to(format!("Le budget '{}'n'existe pas.", old_budget_name)));
+            println!("{}", error_style.apply_to(format!("Erreur:Le budget '{}'n'existe pas ", old_budget_name)));
         }
 
         Ok(())
@@ -121,8 +121,8 @@ impl  BudgetManager {
     ))
     })?;
     let mut table = Table::new();
-    println!("{}", "Liste des budgets :".bold().underline().green());
-    println!("{}", "Création en cours ...".green().bold());
+    println!("{}", "Liste des budgets :\n".bold().underline().green());
+    println!("{}", "Création en cours .....\n".green().bold());
     table.add_row(row!["ID".bold(),"Nom du Budget".bold(),"Total $".bold(),"Restant $".bold()]);
     
     for budget in budget_iterator {
@@ -151,7 +151,7 @@ impl  BudgetManager {
 
     }
     pub fn afficher_alerte(message: &str) {
-        println!("{}", "ALERTE:".red().bold());
+        println!("{}", " ALERTE:".red().bold());
         println!("{}", message.yellow().bold());
     }
 
@@ -164,7 +164,7 @@ pub fn calculate_remaining_amount(&self, budget_name: &str, total_amount: f64) -
     let budget_id = self.get_budget_id(budget_name)?;
 
     if budget_id.is_none() {
-        println!("{}", error_style.apply_to("Erreur : Le budget spécifié n'existe pas."));
+        println!("{}", error_style.apply_to("Erreur : Le budget spécifié n'existe pas"));
         return Err(rusqlite::Error::InvalidParameterName("Budget non trouvé".into()));
     }
     let budget_id = budget_id.unwrap();
@@ -179,7 +179,7 @@ pub fn calculate_remaining_amount(&self, budget_name: &str, total_amount: f64) -
 
     if remaining_amount < total_amount * 0.1 {
         Self::afficher_alerte(&format!(
-            "Le montant restant est inférieur à 10 % du budget total ({}$ restant).",
+            "Le montant restant est inférieur à 10 % du budget total ({}$ restant)",
             remaining_amount
         ));
     }
@@ -187,14 +187,14 @@ pub fn calculate_remaining_amount(&self, budget_name: &str, total_amount: f64) -
     Ok(remaining_amount)
 }
 
-    /////////////////////////////////
+//==================================Function to add transactions====================================
     
     pub fn add_transaction(&self, budget_name: &str, transaction_name: String, total_amount: f64) -> Result<()> {
         let error_style = Style::new().red();
         let success_style = Style::new().green();
 
         let budget_id = self.get_budget_id(budget_name)?.ok_or_else(|| {
-            println!("{}", error_style.apply_to(format!("Erreur : Le budget '{}' n'existe pas.", budget_name)));
+            println!("{}", error_style.apply_to(format!("Erreur : Le budget '{}' n'existe pas", budget_name)));
             rusqlite::Error::InvalidParameterName("Budget introuvable".into())
         })?;
         
@@ -208,7 +208,7 @@ pub fn calculate_remaining_amount(&self, budget_name: &str, total_amount: f64) -
         Ok(())
     }
 
-    
+//==================================Function to remove transactions====================================
 
     pub fn remove_transaction(&self, budget_name: &str, transaction_name: &str) -> Result<()> {
         let error_style = Style::new().red();
@@ -218,7 +218,7 @@ pub fn calculate_remaining_amount(&self, budget_name: &str, total_amount: f64) -
         let budget_id = match self.get_budget_id(budget_name) {
             Ok(id) => id,
             Err(_) => {
-                println!("{}", error_style.apply_to(format!("Erreur : Le budget '{}' n'existe pas.", budget_name)));
+                println!("{}", error_style.apply_to(format!("Erreur : Le budget '{}' n'existe pas", budget_name)));
                 return Ok(());
             }
         };
@@ -231,12 +231,13 @@ pub fn calculate_remaining_amount(&self, budget_name: &str, total_amount: f64) -
         if rows_affected > 0 {
             println!("{}", success_style.apply_to(format!("Transaction '{}' supprimée avec succès dans le budget '{}'.", transaction_name, budget_name)));
         } else {
-            println!("{}", warning_style.apply_to(format!("Aucune transaction correspondant à '{}' trouvée dans le budget '{}'.", transaction_name, budget_name)));
+            println!("{}", warning_style.apply_to(format!("Aucune transaction correspondant à '{}' trouvée dans le budget '{}'", transaction_name, budget_name)));
         }
 
         Ok(())
     }
 
+//==================================Function to edit transactions====================================
     pub fn edit_transaction(&self, budget_name: &str, old_name: String, new_name: String, new_amount: f64) -> Result<()> {
         let error_style = Style::new().red();
         let success_style = Style::new().green();
@@ -245,7 +246,7 @@ pub fn calculate_remaining_amount(&self, budget_name: &str, total_amount: f64) -
         let budget_id = match self.get_budget_id(budget_name) {
             Ok(id) => id,
             Err(_) => {
-                println!("{}", error_style.apply_to(format!("Erreur : Le budget '{}' n'existe pas.", budget_name)));
+                println!("{}", error_style.apply_to(format!("Erreur : Le budget '{}' n'existe pas", budget_name)));
                 return Ok(());
             }
         };
@@ -258,19 +259,19 @@ pub fn calculate_remaining_amount(&self, budget_name: &str, total_amount: f64) -
         if rows_affected > 0 {
             println!("{}", success_style.apply_to("Transaction modifiée avec succès !"));
         } else {
-            println!("{}", warning_style.apply_to(format!("Aucune transaction correspondant à '{}' trouvée dans le budget '{}'.", old_name, budget_name)));
+            println!("{}", warning_style.apply_to(format!("Aucune transaction correspondant à '{}' trouvée dans le budget '{}'", old_name, budget_name)));
         }
-
         Ok(())
     }
-
+//==================================Function to show remaining amount ====================================
     pub fn show_remaining_amount(&self, budget_name: &str) -> Result<()> {
         let success_style = Style::new().green();
         let warning_style = Style::new().red();
         let title_style = Style::new().blue().bold();
     
         // Log pour vérifier le nom du budget
-        println!("Recherche du budget : {}", budget_name);
+        println!("{}", format!("Recherche du budget : {} .....\n", budget_name).green());
+
     
         let budget = match self.conn.query_row(
             "SELECT id, total_amount FROM budgets WHERE budget_name = ?1",
@@ -282,7 +283,7 @@ pub fn calculate_remaining_amount(&self, budget_name: &str, total_amount: f64) -
                 budget
             },
             Err(_) => {
-                println!("{}", warning_style.apply_to(format!("Erreur : Le budget '{}' n'existe pas.", budget_name)));
+                println!("{}", warning_style.apply_to(format!("Erreur : Le budget '{}' n'existe pas", budget_name)));
                 return Ok(()); 
             }
         };
