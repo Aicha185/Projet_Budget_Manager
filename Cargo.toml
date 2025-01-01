@@ -1,0 +1,17 @@
+[package]
+name = "projet_gestion_budgets"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rusqlite = { version = "0.27", features = ["bundled"] } # Pour la gestion de la base de données SQLite
+crossterm = "0.26"    # Pour les opérations sur le terminal (comme l'affichage et la gestion des entrées clavier)
+dialoguer = "0.10"    # Pour créer des menus interactifs
+console = "0.15"      # Pour la gestion des styles de texte (couleurs, etc.)
+csv = "1.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_derive = "1.0"
+serde_json = "1.0"
+tui = "0.19"
+colored = "2.0"         # Bibliothèque pour styliser les textes (couleurs)
+prettytable = "0.10.0"    # Bibliothèque pour créer des tableaux jolis
